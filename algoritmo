@@ -1,0 +1,85 @@
+import random
+import timeit
+
+# Clase Usuario
+class Usuario:
+    def __init__(self, user_id, nombre, edad):
+        self.user_id = user_id
+        self.nombre = nombre
+        self.edad = edad
+
+    def __repr__(self):
+        return f"ID: {self.user_id}, Nombre: {self.nombre}, Edad: {self.edad}"
+
+
+# Generar 100,000 usuarios con datos aleatorios
+def generar_usuarios(cantidad):
+    nombres = ["Alice", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Hannah", "Ivy", "Jack"]
+    usuarios = []
+    for i in range(cantidad):
+        user_id = i + 1
+        nombre = random.choice(nombres)
+        edad = random.randint(18, 60)
+        usuarios.append(Usuario(user_id, nombre, edad))
+    return usuarios
+
+
+# Búsqueda lineal
+def busqueda_lineal(usuarios, user_id):
+    for usuario in usuarios:
+        if usuario.user_id == user_id:
+            return usuario
+    return None
+
+
+# Búsqueda binaria (requiere que la lista esté ordenada por ID)
+def busqueda_binaria(usuarios, user_id):
+    izquierda = 0
+    derecha = len(usuarios) - 1
+    while izquierda <= derecha:
+        medio = (izquierda + derecha) // 2
+        if usuarios[medio].user_id == user_id:
+            return usuarios[medio]
+        elif usuarios[medio].user_id < user_id:
+            izquierda = medio + 1
+        else:
+            derecha = medio - 1
+    return None
+
+
+# Comparar tiempos de ejecución
+def comparar_tiempos(usuarios, user_id):
+    # Tiempo de búsqueda lineal
+    tiempo_lineal = timeit.timeit(lambda: busqueda_lineal(usuarios, user_id), number=1)
+
+    # Tiempo de búsqueda binaria (requiere lista ordenada)
+    usuarios_ordenados = sorted(usuarios, key=lambda x: x.user_id)
+    tiempo_binario = timeit.timeit(lambda: busqueda_binaria(usuarios_ordenados, user_id), number=1)
+
+    return tiempo_lineal, tiempo_binario
+
+
+# Ejecución principal
+if __name__ == "__main__":
+    # Generar 100,000 usuarios
+    usuarios = generar_usuarios(100000)
+
+    # ID a buscar
+    user_id_a_buscar = random.randint(1, 100000)
+
+    # Buscar usuario con búsqueda lineal
+    print(f"Buscando usuario con ID {user_id_a_buscar} usando búsqueda lineal...")
+    usuario_encontrado_lineal = busqueda_lineal(usuarios, user_id_a_buscar)
+    print(f"Resultado (Lineal): {usuario_encontrado_lineal}")
+
+    # Buscar usuario con búsqueda binaria
+    print(f"Buscando usuario con ID {user_id_a_buscar} usando búsqueda binaria...")
+    usuarios_ordenados = sorted(usuarios, key=lambda x: x.user_id)
+    usuario_encontrado_binario = busqueda_binaria(usuarios_ordenados, user_id_a_buscar)
+    print(f"Resultado (Binaria): {usuario_encontrado_binario}")
+
+    # Comparar tiempos
+    tiempo_lineal, tiempo_binario = comparar_tiempos(usuarios, user_id_a_buscar)
+    print(f"\nTiempos de ejecución:")
+    print(f"Búsqueda Lineal: {tiempo_lineal:.6f} segundos")
+    print(f"Búsqueda Binaria: {tiempo_binario:.6f} segundos")
